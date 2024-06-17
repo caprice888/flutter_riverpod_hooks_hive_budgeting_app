@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 
+import '../screens/custom_stacked_bar_graph_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/profile_screen.dart';
@@ -34,7 +35,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: '/areagraph',
-          pageBuilder: (context, state) => fadeThroughTransition(context, state, StackedBarGraphV2()),
+          pageBuilder: (context, state) => fadeThroughTransition(context, state, CustomStackedBarGraphScreen()),
         ),
         GoRoute(
           path: '/settings',
