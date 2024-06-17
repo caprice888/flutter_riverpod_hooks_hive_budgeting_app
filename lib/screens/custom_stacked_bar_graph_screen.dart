@@ -23,19 +23,17 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
     //horizontal scroll controller
      final scrollController = useScrollController();
 
+     //graph zoom scale factor
+     final scaleFactor = useState(1.0);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Transactions Over Time'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: _buildStackedBarChart(groupedData, scrollController, context),
-            ),
-          ],
-        ),
+        child: Center(
+          child: _buildStackedBarChart(groupedData, scrollController, scaleFactor, context)),
       ),
     );
   }
@@ -61,13 +59,13 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
 
 
     //print grounpedData
-    print("DEBUG: print groupedData");
-    groupedData.forEach((key, value) {
-      print('Date: $key');
-      value.forEach((category, amount) {
-        print('Category: $category, Amount: $amount');
-      });
-    });
+    // print("DEBUG: print groupedData");
+    // groupedData.forEach((key, value) {
+    //   print('Date: $key');
+    //   value.forEach((category, amount) {
+    //     print('Category: $category, Amount: $amount');
+    //   });
+    // });
     return groupedData;
   }
 
@@ -84,22 +82,28 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
     return maxAmount;
   }
 
-  CustomStackedBarGraph _buildStackedBarChart(Map<DateTime, Map<String, double>> groupedData, ScrollController scrollController, BuildContext context) {
+  Widget _buildStackedBarChart(Map<DateTime, Map<String, double>> groupedData, ScrollController scrollController, ValueNotifier<double> scaleFactor, BuildContext context) {
     List<DateTime> dates = groupedData.keys.toList()..sort();
     List<String> categories = groupedData.values.expand((element) => element.keys).toSet().toList();
+
+    //print categories
+    // print("DEBUG: print categories");
+    // categories.forEach((category) {
+    //   print('Category: $category');
+    // });
 
     List<GraphBar> bars = dates.map((date) {
       List<GraphBarSection> sections = categories.map((category) {
         double value = groupedData[date]![category] ?? 0.0;
-        print("DEBUG: value: $value");
+        //print("DEBUG: value: $value");
         return GraphBarSection(
           value,
           color: _getColorForCategory(category),
         );
       }).toList();
       
-      print("DEBUG: dates.length: ${dates.length} categories.length: ${categories.length} sections.length: ${sections.length}");
-      print("DEBUG: date: $date ");
+      //print("DEBUG: dates.length: ${dates.length} categories.length: ${categories.length} sections.length: ${sections.length}");
+      //print("DEBUG: date: $date ");
       //GraphBar uses month date type!!
       //can only display dates by month on the x-axis
       return GraphBar(
@@ -109,14 +113,13 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
     }).toList();
 
     //print graph bars
-    print("DEBUG: print graph bars");
-    bars.forEach((bar) {
-      print('Date: ${DateFormat("MMM dd, yyyy").format(bar.date)}');
-      bar.sections.forEach((section) {
-        print('Category: ${categories[bar.sections.indexOf(section)]}, Amount: ${section.value}');
-      });
-    });
-
+    // print("DEBUG: print graph bars");
+    // bars.forEach((bar) {
+    //   print('Date: ${DateFormat("MMM dd, yyyy").format(bar.date)}');
+    //   bar.sections.forEach((section) {
+    //     print('Category: ${categories[bar.sections.indexOf(section)]}, Amount: ${section.value}');
+    //   });
+    // });
 
     return CustomStackedBarGraph(
       GraphData(
@@ -125,103 +128,32 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
         Color.fromARGB(255, 200, 235, 255),
       ),
       yLabelConfiguration: YLabelConfiguration(
-        labelCount: 5,
-        maxY: _findMaxAmount(groupedData) +10, //maybe percentage of max amount
+        labelCount: 4,
+        
+        maxY: scaleFactor.value * _findMaxAmount(groupedData) +10, //maybe percentage of max amount
         minY: 0,
         decimalPlaces: 2,
         labelPrefix: '\$',    
         labelStyle: TextStyle(
           color: Color.fromARGB(255, 0, 0, 0),
           fontSize: 11,
+          fontWeight: FontWeight.bold,
         ),
       ),
       xLabelConfiguration: XLabelConfiguration(
         labelStyle: TextStyle(
           color: Color.fromARGB(255, 0, 0, 0),
           fontSize: 11,
+          fontWeight: FontWeight.bold,
         ), 
       ),
       scrollController: scrollController,
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.8,
+      onBarTapped: (value){
+        print("Bar Tapped $value");
+      },
     );
   }
-  // Build the Stacked Bar Chart using stacked_bar_chart
-  // Widget _buildStackedBarChart(Map<DateTime, Map<String, double>> groupedData) {
-  //   List<DateTime> dates = groupedData.keys.toList()..sort();
-  //   List<String> categories = groupedData.values.expand((element) => element.keys).toSet().toList();
-
-  //   List<GraphBar> bars = dates.map((date) {
-  //     List<GraphBarSection> sections = categories.map((category) {
-  //       double value = groupedData[date]![category] ?? 0.0;
-  //       print("DEBUG: value: $value");
-  //       return GraphBarSection(
-  //         value,
-  //         color: _getColorForCategory(category),
-  //       );
-  //     }).toList();
-      
-  //     print("DEBUG: dates.length: ${dates.length} categories.length: ${categories.length} sections.length: ${sections.length}");
-  //     print("DEBUG: date: $date ");
-  //     //GraphBar uses month date type!!
-  //     //can only display dates by month on the x-axis
-  //     return GraphBar(
-  //       date,
-  //       sections,
-  //     );
-  //   }).toList();
-
-  //   //print graph bars
-  //   print("DEBUG: print graph bars");
-  //   bars.forEach((bar) {
-  //     print('Date: ${DateFormat("MMM dd, yyyy").format(bar.month)}');
-  //     bar.sections.forEach((section) {
-  //       print('Category: ${categories[bar.sections.indexOf(section)]}, Amount: ${section.value}');
-  //     });
-  //   });
-  //   return Graph(
-  //     GraphData(
-  //       "Transactions Over Time",
-  //       bars,
-  //       const Color.fromARGB(255, 215, 75, 75),
-  //     ),
-  //     yLabelConfiguration: YLabelConfiguration(
-  //       labelStyle: TextStyle(
-  //         color: Colors.grey,
-  //         fontSize: 11,
-  //       ),
-  //       interval: 50,//_getYAxisInterval(bars),
-  //       labelCount: 5,
-  //       labelMapper: (num value) {
-  //         print("DEBUG!!!: value: $value");
-  //         return NumberFormat.compactCurrency(
-  //           locale: "en",
-  //           decimalDigits: 0,
-  //           symbol: "\$",
-  //         ).format(value);
-  //       },
-  //     ),
-  //     xLabelConfiguration: XLabelConfiguration(
-  //       labelStyle: TextStyle(
-  //         color: Colors.grey,
-  //         fontSize: 11,
-  //       ),
-  //       labelMapper: (DateTime date) {
-  //         print("DEBUG!: date: $date");
-  //         return DateFormat("MMM dd").format(date);
-  //       },
-  //     ),
-  //     graphType: GraphType.StackedRounded, // Use GraphType.StackedRounded for rounded bars
-  //     // netLine: NetLine(
-  //     //   showLine: true,
-  //     //   lineColor: Colors.black,
-  //     //   pointBorderColor: Colors.black,
-  //     //   coreColor: Colors.yellow,
-  //     // ),
-  //     onBarTapped: (GraphBar bar) {
-  //       print('Date: ${DateFormat("MMM dd, yyyy").format(bar.month)}');
-  //     },
-  //   );
-  // }
 
   // Helper method to get a color for each category
   Color _getColorForCategory(String category) {
@@ -239,12 +171,4 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
     }
   }
 
-  // Helper method to calculate the Y-axis interval based on data
-  // double _getYAxisInterval(List<GraphBar> bars) {
-  //   double maxAmount = bars.fold(0, (prev, bar) {
-  //     double barMax = bar.sections.map((section) => section.value).reduce((a, b) => a + b);
-  //     return prev > barMax ? prev : barMax;
-  //   });
-  //   return maxAmount / 5; // Adjust this value as needed
-  // }
 }

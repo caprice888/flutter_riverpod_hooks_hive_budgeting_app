@@ -7,7 +7,7 @@ import 'model/graph_data.dart';
 import 'model/x_label_configuration.dart';
 import 'model/y_label_configuration.dart';
 
-class CustomStackedBarGraph extends StatelessWidget {
+class CustomStackedBarGraph extends StatefulWidget {
   final GraphData data;
   final XLabelConfiguration? xLabelConfiguration;
   final YLabelConfiguration? yLabelConfiguration;
@@ -30,24 +30,45 @@ class CustomStackedBarGraph extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    double totalWidth = (data.bars.length * barWidth).toDouble();
-    double canvasWidth = minWidth != null ? (totalWidth > minWidth! ? totalWidth : minWidth!) : totalWidth;
+  State<CustomStackedBarGraph> createState() => _CustomStackedBarGraphState();
+}
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      controller: scrollController,
-      child: Container(
-        height: height,
-        width: canvasWidth,
-        color: data.backgroundColor,
-        child: CustomPaint(
-          painter: _StackedBarGraphPainter(
-            data,
-            xLabelConfiguration: xLabelConfiguration,
-            yLabelConfiguration: yLabelConfiguration,
-            barWidth: barWidth,
-            onBarTapped: onBarTapped,
+class _CustomStackedBarGraphState extends State<CustomStackedBarGraph> {
+  double _scaleFactor = 1.0;
+    double _baseScaleFactor = 1.0;
+  @override
+  Widget build(BuildContext context) {
+    double totalWidth = (widget.data.bars.length * widget.barWidth).toDouble();
+    double canvasWidth = widget.minWidth != null ? (totalWidth > widget.minWidth! ? totalWidth : widget.minWidth!) : totalWidth;
+    
+    
+    return GestureDetector(
+      onScaleStart: (ScaleStartDetails details) {
+            _baseScaleFactor = _scaleFactor;
+          },
+          onScaleUpdate: (ScaleUpdateDetails details) {
+            setState(() {
+              _scaleFactor = _baseScaleFactor * details.scale;
+            });
+          },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        controller: widget.scrollController,
+        child: Padding(
+        padding: const EdgeInsets.only(left: 50, bottom: 40, top: 20), // Add some padding for labels
+          child: Container(
+            height: widget.height,
+            width: canvasWidth,
+            color: widget.data.backgroundColor,
+            child: CustomPaint(
+              painter: _StackedBarGraphPainter(
+                widget.data,
+                xLabelConfiguration: widget.xLabelConfiguration,
+                yLabelConfiguration: widget.yLabelConfiguration,
+                barWidth: widget.barWidth,
+                onBarTapped: widget.onBarTapped,
+              ),
+            ),
           ),
         ),
       ),
@@ -108,12 +129,13 @@ class _StackedBarGraphPainter extends CustomPainter {
 
       // Draw X labels
       if (xLabelConfiguration != null) {
+        textPainter.textAlign = TextAlign.center; // Center align the X-axis labels
         textPainter.text = TextSpan(
           text: getFormattedDate(data.bars[i].date),
           style: xLabelConfiguration?.labelStyle ?? TextStyle(color: Colors.black),
         );
         textPainter.layout(minWidth: 0, maxWidth: barWidth);
-        textPainter.paint(canvas, Offset(barX + (barWidth - textPainter.width) / 2, size.height));
+        textPainter.paint(canvas, Offset(barX + (barWidth - textPainter.width) / 2, size.height +2 ));
       }
     }
 
@@ -122,7 +144,7 @@ class _StackedBarGraphPainter extends CustomPainter {
       for (int i = 0; i <= yLabelConfiguration!.labelCount; i++) {
         double yValue = minY + i * ((maxY - minY) / yLabelConfiguration!.labelCount);
         double yPosition = size.height - (yValue * yScale);
-
+        textPainter.textAlign = TextAlign.right; // Right align the Y-axis labels
         textPainter.text = TextSpan(
           text: "${yLabelConfiguration?.labelPrefix ?? ""}${yValue.toStringAsFixed(yLabelConfiguration!.decimalPlaces)}${yLabelConfiguration?.labelSuffix ?? ""}",
           style: yLabelConfiguration?.labelStyle ?? TextStyle(color: Colors.black),
@@ -208,10 +230,54 @@ class _StackedBarGraphPainter extends CustomPainter {
 
   String getFormattedDate(DateTime date) {
     //format date ourselves into a string (e.g. 'dd/mm/yyyy') instead of using DateFormat
-    
+    String month="";
+    switch(date.month)
+    {
+      case 1:
+        month='Jan';
+        break;
+      case 2:
+        month='Feb';
+        break;
+      case 3:
+        month='Mar';
+        break;
+      case 4:
+        month='Apr';
+        break;
+      case 5:
+        month='May';
+        break;
+      case 6:
+        month='Jun';
+        break;
+      case 7:
+        month='Jul';
+        break;
+      case 8:
+        month='Aug';
+        break;
+      case 9:
+        month='Sep';
+        break;
+      case 10:
+        month='Oct';
+        break;
+      case 11:
+        month='Nov';
+        break;
+      case 12:
+        month='Dec';
+        break;
+      default:
+        month='';
+    }
+
+
     //ensure day value=1 displays 01
     //ensure month value=1 displays 01
-    return "${(date.day<10)?'0${date.day}':'${date.day}'}/${(date.month<10)?'0${date.month}':'${date.month}'}\n${date.year}";
+    //${(date.month<10)?'0${date.month}':'${date.month}'}
+    return "${(date.day<10)?'0${date.day}':'${date.day}'}\n$month\n${date.year}";
      
   }
 }
