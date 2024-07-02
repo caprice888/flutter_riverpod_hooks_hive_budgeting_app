@@ -18,7 +18,7 @@ class _BottomNavScaffoldState extends State<BottomNavScaffold> {
         context.go('/home');
         break;
       case 1:
-        context.go('/areagraph');
+        context.go('/graphs');
         break;
       case 2:
         context.go('/settings');

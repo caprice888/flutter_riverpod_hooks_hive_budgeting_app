@@ -166,192 +166,195 @@ class HomeScreen extends HookConsumerWidget {
                 fit: BoxFit.cover,
               ),
             ),  
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                
-                //title
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text('Budgeting App', 
-                  style: TextStyle(
-                    color: Colors.white, 
-                    fontSize: 42, 
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(2.0, 2.0),
-                        blurRadius: 3.0,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),]
-                    ),),
-                ),
-                
-                //Add Transaction Card
-                selectedTransactionsToDelete.value.isEmpty
-                ? Card(
-                  //card background colour
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  child: Padding(
-                    padding: const EdgeInsets.all(22.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(                          
-                        children: [
-                          //card title
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text('Add Transaction', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
-                          ),
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  child: TextField(
-                                    controller: nameController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Transaction Name',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.2,
-                                  child: TextField(
-                                    controller: amountController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      labelText: 'Amount',
-                                      prefixText: '\$ ',
-                                      prefixStyle: TextStyle(
-                                        color: Colors.green,
-                                        fontSize: 16,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  
+                  //title
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('Budgeting App', 
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontSize: 42, 
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(2.0, 2.0),
+                          blurRadius: 3.0,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),]
+                      ),),
+                  ),
+                  
+                  
+                  //Add Transaction Card
+                  selectedTransactionsToDelete.value.isEmpty
+                  ? Card(
+                    //card background colour
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(22.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(                          
+                          children: [
+                            //card title
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text('Add Transaction', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.4,
+                                    child: TextField(
+                                      controller: nameController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Transaction Name',
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          
-                          //text widget
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text('Transaction Type', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
-                              ),
-                              //dropdown
-                              // DropdownButton<String>(
-                              //   //initial value
-                              //   value: selectedCategoryTags.value.isEmpty ? 'Budgeting Tags' : selectedCategoryTags.value[0],
-                              //   //controller: _typeController,
-                              //   items: userData.savedCategoryTags.map((String value) {
-                              //     return DropdownMenuItem<String>(
-                              //       value: value,
-                              //       child: Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, overflow: TextOverflow.ellipsis),),
-                              //     );
-                              //   }).toList(),
-                              //   onChanged: (String? newValue) {
-                              //     // Handle change here
-                              //   },
-                              // ),
-                              // Display a button that shows the custom dropdown when pressed
-                              ElevatedButton(
-                                onPressed: () => showCustomDropdown(context),
-                                child: Text(
-                                  selectedCategoryTags.value.isEmpty
-                                      ? 'Select Categories'
-                                      : selectedCategoryTags.value.join(', ').length > 20
-                                          ? selectedCategoryTags.value.join(', ').substring(0, 20) + '...'
-                                          : selectedCategoryTags.value.join(', '),
-                                      
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width * 0.2,
+                                    child: TextField(
+                                      controller: amountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        labelText: 'Amount',
+                                        prefixText: '\$ ',
+                                        prefixStyle: TextStyle(
+                                          color: Colors.green,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          
-                                              
-                          //submit button
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // if (_formKey.currentState!.validate()) {
-                                //   //save to hive
-                                //   writeData(_name, _amount, _type);   
-                                // }
-                                //print("DEBUG: $_name, $_amount, $_type");
-                                //writeData(_name, _amount, _type);
-                                ref.read(userDataProvider.notifier).addTransaction(nameController.text, double.parse(amountController.text), selectedCategoryTags.value);
-                                nameController.clear();
-                                amountController.clear();
-                                selectedCategoryTags.value = [];
-                              },
-                              child: const Text('Submit'),
+                              ],
                             ),
-                          ),
-                        ],
-                        
+                            
+                            //text widget
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text('Transaction Type', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
+                                ),
+                                //dropdown
+                                // DropdownButton<String>(
+                                //   //initial value
+                                //   value: selectedCategoryTags.value.isEmpty ? 'Budgeting Tags' : selectedCategoryTags.value[0],
+                                //   //controller: _typeController,
+                                //   items: userData.savedCategoryTags.map((String value) {
+                                //     return DropdownMenuItem<String>(
+                                //       value: value,
+                                //       child: Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, overflow: TextOverflow.ellipsis),),
+                                //     );
+                                //   }).toList(),
+                                //   onChanged: (String? newValue) {
+                                //     // Handle change here
+                                //   },
+                                // ),
+                                // Display a button that shows the custom dropdown when pressed
+                                ElevatedButton(
+                                  onPressed: () => showCustomDropdown(context),
+                                  child: Text(
+                                    selectedCategoryTags.value.isEmpty
+                                        ? 'Select Categories'
+                                        : selectedCategoryTags.value.join(', ').length > 20
+                                            ? selectedCategoryTags.value.join(', ').substring(0, 20) + '...'
+                                            : selectedCategoryTags.value.join(', '),
+                                        
+                                  ),
+                                ),
+                              ],
+                            ),
+                            
+                                                
+                            //submit button
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // if (_formKey.currentState!.validate()) {
+                                  //   //save to hive
+                                  //   writeData(_name, _amount, _type);   
+                                  // }
+                                  //print("DEBUG: $_name, $_amount, $_type");
+                                  //writeData(_name, _amount, _type);
+                                  ref.read(userDataProvider.notifier).addTransaction(nameController.text, double.parse(amountController.text), selectedCategoryTags.value);
+                                  nameController.clear();
+                                  amountController.clear();
+                                  selectedCategoryTags.value = [];
+                                },
+                                child: const Text('Submit'),
+                              ),
+                            ),
+                          ],
+                          
+                        ),
                       ),
                     ),
-                  ),
-                )
-                : Container(),
-        
-        
-                //display transactions
-                Expanded(
-                  //height: MediaQuery.of(context).size.height * 0.5,
-                  child: ListView.builder(
-                    key: _listviewKey,
-                    itemCount: userData.sortedTransactions.length,
-                    itemBuilder: (context, index) {
+                  )
+                  : Container(),
                       
-                      int itemCount = userData.sortedTransactions.length;
-                      int reversedIndex = itemCount - 1 - index;
-                      bool isSelectedForDelete = selectedTransactionsToDelete.value.contains(reversedIndex);
-                      return GestureDetector(
-                        onLongPress: (){onLongPressTransaction(reversedIndex);},
-                        onTap: (){
-                          if(kIsWeb)
-                          {
-                            onLongPressTransaction(reversedIndex);
-                          }
-                          else
-                          {
-                            onTapTransaction(reversedIndex);
-                          } 
-                        },
-                        child: Card(
-                          color: isSelectedForDelete ? const Color.fromARGB(255, 244, 184, 184) : null,
-                          child: ListTile(
-                            leading: isSelectedForDelete ? Icon(Icons.check_box) : null,
-                            title: RichText(
-                              text: TextSpan(
-                                text: '${DateFormat('dd-MM-yyyy - kk:mm').format(userData.sortedTransactions[reversedIndex].date)}', // Default text style
-                                style: TextStyle(color: Colors.black, fontSize: 18, fontStyle: FontStyle.italic,),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: '\n${userData.sortedTransactions[reversedIndex].title}',
-                                    style: TextStyle(fontStyle: FontStyle.normal, fontSize: 22, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                      
+                  //display transactions
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      key: _listviewKey,
+                      itemCount: userData.sortedTransactions.length,
+                      itemBuilder: (context, index) {
+                        
+                        int itemCount = userData.sortedTransactions.length;
+                        int reversedIndex = itemCount - 1 - index;
+                        bool isSelectedForDelete = selectedTransactionsToDelete.value.contains(reversedIndex);
+                        return GestureDetector(
+                          onLongPress: (){onLongPressTransaction(reversedIndex);},
+                          onTap: (){
+                            if(kIsWeb)
+                            {
+                              onLongPressTransaction(reversedIndex);
+                            }
+                            else
+                            {
+                              onTapTransaction(reversedIndex);
+                            } 
+                          },
+                          child: Card(
+                            color: isSelectedForDelete ? const Color.fromARGB(255, 244, 184, 184) : null,
+                            child: ListTile(
+                              leading: isSelectedForDelete ? Icon(Icons.check_box) : null,
+                              title: RichText(
+                                text: TextSpan(
+                                  text: '${DateFormat('dd-MM-yyyy - kk:mm').format(userData.sortedTransactions[reversedIndex].date)}', // Default text style
+                                  style: TextStyle(color: Colors.black, fontSize: 18, fontStyle: FontStyle.italic,),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: '\n${userData.sortedTransactions[reversedIndex].title}',
+                                      style: TextStyle(fontStyle: FontStyle.normal, fontSize: 22, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              subtitle: Text("\$${userData.sortedTransactions[reversedIndex].amount.toStringAsFixed(2)}", style: TextStyle(color: Colors.red),),
+                              trailing: Text(userData.sortedTransactions[reversedIndex].categoryTags.join(', '),),
                             ),
-                            subtitle: Text("\$${userData.sortedTransactions[reversedIndex].amount.toStringAsFixed(2)}", style: TextStyle(color: Colors.red),),
-                            trailing: Text(userData.sortedTransactions[reversedIndex].categoryTags.join(', '),),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
       ),
