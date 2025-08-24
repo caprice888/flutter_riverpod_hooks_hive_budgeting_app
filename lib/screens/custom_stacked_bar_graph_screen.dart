@@ -32,6 +32,20 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
      //global keys
     final GlobalKey titleKey = GlobalKey();
 
+
+     // If there are no transactions, show a message
+    if (groupedData.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Transactions Over Time'),
+        ),
+        body: Center(
+          child: const Text('No transactions found.'),
+        ),
+      );
+    }
+
+    // If there are transactions, show the stacked bar graph
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transactions Over Time'),
@@ -205,23 +219,29 @@ class CustomStackedBarGraphScreen extends HookConsumerWidget {
         groupedData[date] = {};
       }
 
-      for (var category in transaction.categoryTags) {
-        if (!groupedData[date]!.containsKey(category)) {
-          groupedData[date]![category] = 0;
-        }
-        groupedData[date]![category] = groupedData[date]![category]! + transaction.amount;
+      // for (var category in transaction.categoryTags) {
+      //   if (!groupedData[date]!.containsKey(category)) {
+      //     groupedData[date]![category] = 0;
+      //   }
+      //   groupedData[date]![category] = groupedData[date]![category]! + transaction.amount;
+      // }
+      if(!groupedData[date]!.containsKey(transaction.category.name)) {
+        groupedData[date]![transaction.category.name] = 0;
       }
+      
+      groupedData[date]![transaction.category.name] = groupedData[date]![transaction.category.name]! + transaction.amount;
+      
     }
 
 
     //print grounpedData
-    // print("DEBUG: print groupedData");
-    // groupedData.forEach((key, value) {
-    //   print('Date: $key');
-    //   value.forEach((category, amount) {
-    //     print('Category: $category, Amount: $amount');
-    //   });
-    // });
+    print("DEBUG: print groupedData");
+    groupedData.forEach((key, value) {
+      print('Date: $key');
+      value.forEach((category, amount) {
+        print('Category: $category, Amount: $amount');
+      });
+    });
     return groupedData;
   }
 

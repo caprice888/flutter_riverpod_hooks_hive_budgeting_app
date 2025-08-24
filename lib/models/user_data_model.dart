@@ -1,3 +1,4 @@
+import 'package:budgeting_app_v2/models/transaction_category_model.dart';
 import 'package:hive/hive.dart';
 
 import 'transaction_model.dart';
@@ -13,26 +14,26 @@ class UserDataModel {
   @HiveField(2)
   final String username;
   @HiveField(3)
-  final List<String> savedCategoryTags;
+  final List<TransactionCategoryModel> savedTransactionCategories;
 
   UserDataModel({
     required this.transactions,
     required this.dateJoined,
     required this.username,
-    required this.savedCategoryTags,
+    required this.savedTransactionCategories,
   });
 
   UserDataModel copyWith({
     List<TransactionModel>? transactions,
     DateTime? dateJoined,
     String? username,
-    List<String>? savedCategoryTags,
+    List<TransactionCategoryModel>? savedTransactionCategories,
   }) {
     return UserDataModel(
       transactions: transactions ?? this.transactions,
       dateJoined: dateJoined ?? this.dateJoined,
       username: username ?? this.username,
-      savedCategoryTags: savedCategoryTags ?? this.savedCategoryTags,
+      savedTransactionCategories: savedTransactionCategories ?? this.savedTransactionCategories,
     );
   }
 

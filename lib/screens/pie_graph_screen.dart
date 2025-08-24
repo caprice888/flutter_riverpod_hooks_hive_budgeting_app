@@ -25,6 +25,18 @@ class PieGraphScreen extends HookConsumerWidget {
     // Group transactions by date and category
     final groupedData = _groupTransactionsByDateAndCategory(userData.transactions);
 
+    // If there are no transactions, show a message
+    print("DEBUG: groupedData: ${groupedData}");
+    if (groupedData.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Transactions Over Time'),
+        ),
+        body: Center(
+          child: const Text('No transactions found.'),
+        ),
+      );
+    }
     // //horizontal scroll controller
     //  final scrollController = useScrollController();
 
@@ -91,6 +103,10 @@ class PieGraphScreen extends HookConsumerWidget {
     // });
 
 
+    
+
+
+  // If there are transactions, show the pie chart
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transactions Over Time'),
@@ -112,10 +128,10 @@ class PieGraphScreen extends HookConsumerWidget {
                   children: [
                     //title
                     Text(
-                      'Date\n${DateFormat.yMMMd().format(dates.value[selectedDateIndex.value])}',
+                      '${DateFormat.yMMMd().format(dates.value[selectedDateIndex.value])}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         shadows: [
@@ -144,6 +160,22 @@ class PieGraphScreen extends HookConsumerWidget {
                           onPressed: () {
                             if(selectedDateIndex.value > 0) {
                               selectedDateIndex.value--;
+
+                              //update latestData
+                              latestData.value = groupedData[dates.value[selectedDateIndex.value]]!;
+                              pieChartSections.value = latestData.value.entries.map((entry) {
+                                //random color
+                                final color =  Color((entry.key.hashCode & 0xFFFFFF).toUnsigned(32) | 0xFF000000);
+                                //Colors.primaries[Random().nextInt(Colors.primaries.length)];
+                                return PieChartSectionData(
+                                  value: entry.value,
+                                  title: entry.key,
+                                  color: color,
+                                  titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                                  //radius: (touchedIndex.value == -1) ? sectionRadius.value * scaleFactor.value : sectionRadius.value * scaleFactor.value + 150,
+                                  radius: sectionRadius.value * scaleFactor.value,
+                                );
+                              }).toList();
                             }
                           },
                         ),
@@ -159,6 +191,22 @@ class PieGraphScreen extends HookConsumerWidget {
                           onPressed: () {
                             if(selectedDateIndex.value < dates.value.length - 1) {
                               selectedDateIndex.value++;
+
+                              //update latestData
+                              latestData.value = groupedData[dates.value[selectedDateIndex.value]]!;
+                              pieChartSections.value = latestData.value.entries.map((entry) {
+                                //random color
+                                final color =  Color((entry.key.hashCode & 0xFFFFFF).toUnsigned(32) | 0xFF000000);
+                                //Colors.primaries[Random().nextInt(Colors.primaries.length)];
+                                return PieChartSectionData(
+                                  value: entry.value,
+                                  title: entry.key,
+                                  color: color,
+                                  titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                                  //radius: (touchedIndex.value == -1) ? sectionRadius.value * scaleFactor.value : sectionRadius.value * scaleFactor.value + 150,
+                                  radius: sectionRadius.value * scaleFactor.value,
+                                );
+                              }).toList();
                             }
                           },
                         ),
@@ -324,12 +372,16 @@ class PieGraphScreen extends HookConsumerWidget {
         groupedData[date] = {};
       }
 
-      for (var category in transaction.categoryTags) {
-        if (!groupedData[date]!.containsKey(category)) {
-          groupedData[date]![category] = 0;
-        }
-        groupedData[date]![category] = groupedData[date]![category]! + transaction.amount;
-      }
+      // for (var category in transaction.categoryTags) {
+      //   if (!groupedData[date]!.containsKey(category)) {
+      //     groupedData[date]![category] = 0;
+      //   }
+      //   groupedData[date]![category] = groupedData[date]![category]! + transaction.amount;
+      // }
+      if(!groupedData[date]!.containsKey(transaction.category.name)) {
+        groupedData[date]![transaction.category.name] = 0;
+      } 
+      groupedData[date]![transaction.category.name] = groupedData[date]![transaction.category.name]! + transaction.amount;   
     }
 
 

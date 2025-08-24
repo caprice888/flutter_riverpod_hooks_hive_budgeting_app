@@ -20,7 +20,8 @@ class UserDataModelAdapter extends TypeAdapter<UserDataModel> {
       transactions: (fields[0] as List).cast<TransactionModel>(),
       dateJoined: fields[1] as DateTime,
       username: fields[2] as String,
-      savedCategoryTags: (fields[3] as List).cast<String>(),
+      savedTransactionCategories:
+          (fields[3] as List).cast<TransactionCategoryModel>(),
     );
   }
 
@@ -35,7 +36,7 @@ class UserDataModelAdapter extends TypeAdapter<UserDataModel> {
       ..writeByte(2)
       ..write(obj.username)
       ..writeByte(3)
-      ..write(obj.savedCategoryTags);
+      ..write(obj.savedTransactionCategories);
   }
 
   @override

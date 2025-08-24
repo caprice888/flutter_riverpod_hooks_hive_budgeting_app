@@ -1,3 +1,4 @@
+import 'package:budgeting_app_v2/models/transaction_category_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends HookConsumerWidget {
     final selectedTransactionsToDelete = useState(<int>{});
 
     //form variables
-    final selectedCategoryTags = useState(<String>[]);
+    final selectedCategoryTag = useState("");
 
     //form data controllers
     final nameController = useTextEditingController();
@@ -83,12 +84,26 @@ class HomeScreen extends HookConsumerWidget {
                             icon: Icon(Icons.add),
                             onPressed: () {
                               final newCategory = newCategoryController.text.trim();
-                              if (newCategory.isNotEmpty && !userData.savedCategoryTags.contains(newCategory)) {
-                                // Update the category tags list in the provider
-                                userData.savedCategoryTags.add(newCategory); // Ensure this updates the state in your provider
-                                selectedCategoryTags.value = [...selectedCategoryTags.value, newCategory];
-                                newCategoryController.clear();
-                                setState(() {}); // To update the UI inside the dialog
+                              if (newCategory.isNotEmpty) { //!userData.savedTransactionCategories.contains(newCategory)) {
+                                bool exists = false;
+                                for(TransactionCategoryModel category in userData.savedTransactionCategories)
+                                {
+                                  if(category.name == newCategory)
+                                  {
+                                    exists = true;
+                                    break;
+                                  }
+                                }
+
+                                if(!exists)
+                                {
+                                  // Update the category tags list in the provider with new category with random color
+                                  userData.savedTransactionCategories.add(TransactionCategoryModel(name: newCategory, colour: 0xFF000000 + (DateTime.now().microsecondsSinceEpoch % 0xFFFFFF)));
+                                  selectedCategoryTag.value = newCategory;
+                                  newCategoryController.clear();
+                                  setState(() {}); // To update the UI inside the dialog
+                                }
+                         
                               }
                             },
                           ),
@@ -97,35 +112,22 @@ class HomeScreen extends HookConsumerWidget {
 
                       SizedBox(height: 10),                  
                       // Display existing categories with checkboxes
-                      ...userData.savedCategoryTags.map((String category) {
+                      //only allow one category to be selected
+                      ...userData.savedTransactionCategories.map((TransactionCategoryModel category) {
                         return CheckboxListTile(
-                          title: Text(category),
-                          value: selectedCategoryTags.value.contains(category),
+                          title: Text(category.name),
+                          value: selectedCategoryTag.value == category.name,
                           onChanged: (bool? checked) {
                             if (checked == true) {
-                              selectedCategoryTags.value = [...selectedCategoryTags.value, category];
-                            } else {
-                              selectedCategoryTags.value = selectedCategoryTags.value.where((tag) => tag != category).toList();
+                              selectedCategoryTag.value = category.name;
+                            }
+                            else {
+                              selectedCategoryTag.value = "";
                             }
                             setState(() {}); // To update the UI inside the dialog
                           },
                         );
                       }).toList(),
-                      // // Display existing categories with checkboxes
-                      // ...userData.savedCategoryTags.map((String category) {
-                      //   return CheckboxListTile(
-                      //     title: Text(category),
-                      //     value: selectedCategoryTags.value.contains(category),
-                      //     onChanged: (bool? checked) {
-                      //       if (checked == true) {
-                      //         selectedCategoryTags.value = [...selectedCategoryTags.value, category];
-                      //       } else {
-                      //         selectedCategoryTags.value = selectedCategoryTags.value.where((tag) => tag != category).toList();
-                      //       }
-                      //       setState(() {}); // To update the UI inside the dialog
-                      //     },
-                      //   );
-                      // }).toList(),
                     ],
                   ),
                 );
@@ -247,31 +249,14 @@ class HomeScreen extends HookConsumerWidget {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Text('Transaction Type', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
                                 ),
-                                //dropdown
-                                // DropdownButton<String>(
-                                //   //initial value
-                                //   value: selectedCategoryTags.value.isEmpty ? 'Budgeting Tags' : selectedCategoryTags.value[0],
-                                //   //controller: _typeController,
-                                //   items: userData.savedCategoryTags.map((String value) {
-                                //     return DropdownMenuItem<String>(
-                                //       value: value,
-                                //       child: Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, overflow: TextOverflow.ellipsis),),
-                                //     );
-                                //   }).toList(),
-                                //   onChanged: (String? newValue) {
-                                //     // Handle change here
-                                //   },
-                                // ),
+                                
                                 // Display a button that shows the custom dropdown when pressed
                                 ElevatedButton(
                                   onPressed: () => showCustomDropdown(context),
                                   child: Text(
-                                    selectedCategoryTags.value.isEmpty
-                                        ? 'Select Categories'
-                                        : selectedCategoryTags.value.join(', ').length > 20
-                                            ? selectedCategoryTags.value.join(', ').substring(0, 20) + '...'
-                                            : selectedCategoryTags.value.join(', '),
-                                        
+                                    selectedCategoryTag.value == null || selectedCategoryTag.value.isEmpty 
+                                      ? 'Select Category Tag'
+                                      : selectedCategoryTag.value,                                    
                                   ),
                                 ),
                               ],
@@ -289,10 +274,10 @@ class HomeScreen extends HookConsumerWidget {
                                   // }
                                   //print("DEBUG: $_name, $_amount, $_type");
                                   //writeData(_name, _amount, _type);
-                                  ref.read(userDataProvider.notifier).addTransaction(nameController.text, double.parse(amountController.text), selectedCategoryTags.value);
+                                  ref.read(userDataProvider.notifier).addTransaction(nameController.text, double.parse(amountController.text), TransactionCategoryModel(name: selectedCategoryTag.value, colour: 0xFF000000 + (DateTime.now().microsecondsSinceEpoch % 0xFFFFFF) ) );
                                   nameController.clear();
                                   amountController.clear();
-                                  selectedCategoryTags.value = [];
+                                  selectedCategoryTag.value = "";
                                 },
                                 child: const Text('Submit'),
                               ),
@@ -346,7 +331,7 @@ class HomeScreen extends HookConsumerWidget {
                                 ),
                               ),
                               subtitle: Text("\$${userData.sortedTransactions[reversedIndex].amount.toStringAsFixed(2)}", style: TextStyle(color: Colors.red),),
-                              trailing: Text(userData.sortedTransactions[reversedIndex].categoryTags.join(', '),),
+                              trailing: Text(userData.sortedTransactions[reversedIndex].category.name,),
                             ),
                           ),
                         );

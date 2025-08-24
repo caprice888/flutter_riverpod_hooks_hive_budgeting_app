@@ -3,6 +3,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../models/transaction_category_model.dart';
 import '../models/transaction_model.dart';
 import '../models/user_data_model.dart';
 import '../services/user_data_service.dart';
@@ -10,7 +11,7 @@ import '../services/user_data_service.dart';
 class UserDataNotifier extends StateNotifier<UserDataModel> {
   final UserDataService _service = UserDataService();
 
-  UserDataNotifier() : super(UserDataModel(transactions: [], dateJoined: DateTime.now(), username: '', savedCategoryTags: ['Food', 'Bill'])) {
+  UserDataNotifier() : super(UserDataModel(transactions: [], dateJoined: DateTime.now(), username: '', savedTransactionCategories: [ TransactionCategoryModel(name: 'Bills', colour: 0xFFE57373), TransactionCategoryModel(name: 'Groceries', colour: 0xFF81D4FA), TransactionCategoryModel(name: 'Socializing', colour: 0xFFAED581), TransactionCategoryModel(name: 'Take Out Food', colour: 0xFF9575CD), TransactionCategoryModel(name: 'Coffee', colour: 0xFFFFD54F), TransactionCategoryModel(name: 'Shopping', colour: 0xFFFFB74D) ])) {
     _loadUserData();
   }
 
@@ -31,23 +32,23 @@ class UserDataNotifier extends StateNotifier<UserDataModel> {
     state = state.copyWith(username: newUsername);
   }
 
-  void addTransaction(String title, double amount, List<String> categoryTags) {
+  void addTransaction(String title, double amount, TransactionCategoryModel category) {
     final newTransaction = TransactionModel(
       id: const Uuid().v4(),
       title: title,
       amount: amount,
-      categoryTags: categoryTags,
+      category: category,
       date: DateTime.now(),
     );
     state = state.copyWith(transactions: [...state.transactions, newTransaction]);
   }
 
-  void addTransactionWithCustomDate(String title, double amount, List<String> categoryTags, DateTime date) {
+  void addTransactionWithCustomDate(String title, double amount, TransactionCategoryModel category, DateTime date) {
     final newTransaction = TransactionModel(
       id: const Uuid().v4(),
       title: title,
       amount: amount,
-      categoryTags: categoryTags,
+      category: category,
       date: date,
     );
     state = state.copyWith(transactions: [...state.transactions, newTransaction]);
@@ -65,12 +66,12 @@ class UserDataNotifier extends StateNotifier<UserDataModel> {
     );
   }
 
-  void updateTransaction(String id, String title, double amount, List<String> categoryTags) {
+  void updateTransaction(String id, String title, double amount, TransactionCategoryModel category) {
     final updatedTransaction = TransactionModel(
       id: id,
       title: title,
       amount: amount,
-      categoryTags: categoryTags,
+      category: category,
       date: DateTime.now(),
     );
     state = state.copyWith(
@@ -78,17 +79,17 @@ class UserDataNotifier extends StateNotifier<UserDataModel> {
     );
   }
 
-  void addSavedCategoryTag(String tag) {
-    state = state.copyWith(savedCategoryTags: [...state.savedCategoryTags, tag]);
+  void addSavedCategoryTag(TransactionCategoryModel category) {
+    state = state.copyWith(savedTransactionCategories: [...state.savedTransactionCategories, category]);
   }
 
-  void removeSavedCategoryTag(String tag) {
-    state = state.copyWith(savedCategoryTags: state.savedCategoryTags.where((t) => t != tag).toList());
+  void removeSavedCategoryTag(TransactionCategoryModel category) {
+    state = state.copyWith(savedTransactionCategories: state.savedTransactionCategories.where((c) => c != category).toList());
   }
 
   //delete user data
   void deleteUserData() {
-    state = UserDataModel(transactions: [], dateJoined: DateTime.now(), username: '', savedCategoryTags: ['Food', 'Bill']);
+    state = UserDataModel(transactions: [], dateJoined: DateTime.now(), username: '', savedTransactionCategories: [ TransactionCategoryModel(name: 'Bills', colour: 0xFFE57373), TransactionCategoryModel(name: 'Groceries', colour: 0xFF81D4FA), TransactionCategoryModel(name: 'Socializing', colour: 0xFFAED581), TransactionCategoryModel(name: 'Take Out Food', colour: 0xFF9575CD), TransactionCategoryModel(name: 'Coffee', colour: 0xFFFFD54F), TransactionCategoryModel(name: 'Shopping', colour: 0xFFFFB74D) ] );
   }
 }
 

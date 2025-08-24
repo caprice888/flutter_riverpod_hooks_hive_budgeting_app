@@ -8,7 +8,7 @@ class LoginWebScreen extends StatelessWidget {
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/loginScreen.jpg'),
             fit: BoxFit.cover,
@@ -18,8 +18,8 @@ class LoginWebScreen extends StatelessWidget {
         Column(
                 children: [
                   // Title
-                  Padding(
-                    padding: const EdgeInsets.only(top: 200.0),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 200.0),
                     child: Center(
                       child: Text(
                         'Budgeting App',
@@ -38,15 +38,15 @@ class LoginWebScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   // Authenticate Button
                   Center(
                     child: ElevatedButton(
                       onPressed: (){context.go("/home");},
-                      child: Text('Login'),
+                      child: const Text('Login'),
                     ),
                   ),
-                  Spacer(flex: 2),
+                  const Spacer(flex: 2),
                 ],
               ),
       ),
