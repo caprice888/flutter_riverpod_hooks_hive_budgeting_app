@@ -28,6 +28,8 @@ This project demonstrates a clean design pattern for Flutter state management wh
 
 * Extensible design for additional domains (e.g., themes with customizable Color schemes stored in Hive)
 
+---
+
 ## 🚀 Why This Pattern?
 
 Typical state management in Flutter apps either:
@@ -55,7 +57,9 @@ This project introduces a separation of concerns:
                        │ Hive Service   │
                        │ (UserData, etc)│
                        └────────────────┘ -->
+---
 
+## 🧩 Architecture Overview
 <pre> ``` 
 ┌──────────────┐        ┌──────────────┐ 
 │ UI Layer     │◀────▶ │ Riverpod     │ 
@@ -75,6 +79,8 @@ This project introduces a separation of concerns:
 **Provider** (StateNotifier): Encapsulates domain logic (UserDataNotifier) and updates state immutably.
 
 **Service (Hive)**: Reads/writes data from a Hive box (userDataBox) to persist state.
+
+---
 
 ## 🧑‍💻 Example Domain: UserData
 
@@ -144,6 +150,7 @@ class UserDataNotifier extends StateNotifier<UserData> {
       state = state.copyWith(transactions: [...state.transactions, tx]);
 }
 ```
+---
 
 ## 🎨 Extending to Themes
 
@@ -174,6 +181,7 @@ class ColorTheme {
   );
 }
 ```
+---
 
 ## 🛠️ Getting Started
 
@@ -208,6 +216,7 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 ```
+---
 
 ## 🌟 Benefits of This Pattern
 
