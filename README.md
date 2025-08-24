@@ -56,7 +56,7 @@ This project introduces a separation of concerns:
                        │ (UserData, etc)│
                        └────────────────┘ -->
 
-<pre> ```text 
+<pre> ``` 
 ┌──────────────┐        ┌──────────────┐ 
 │ UI Layer     │◀────▶ │ Riverpod     │ 
 │ (Widgets)    │        │ StateNotifier│ 
@@ -65,7 +65,8 @@ This project introduces a separation of concerns:
                                 ▼ 
                         ┌────────────────┐ 
                         │ Hive Service   │ 
-                        │ (UserData,etc) │ └────────────────┘ 
+                        │ (UserData,etc) │ 
+                        └────────────────┘ 
 ``` </pre>
 
 
@@ -148,11 +149,11 @@ class UserDataNotifier extends StateNotifier<UserData> {
 
 The same pattern can be used for color themes:
 
-Store Color values in Hive as int (Color.value).
+* Store Color values in Hive as int (Color.value).
 
-Provide ColorThemeNotifier that syncs provider state + Hive persistence.
+* Provide ColorThemeNotifier that syncs provider state + Hive persistence.
 
-Supports toggling between light/dark/custom themes.
+* Supports toggling between light/dark/custom themes.
 
 Example ColorTheme model:
 
@@ -190,7 +191,7 @@ dev_dependencies:
 
 Run build runner to generate Hive adapters:
 
-`flutter pub run build_runner build`
+```flutter pub run build_runner build```
 
 
 Initialize Hive before runApp:
