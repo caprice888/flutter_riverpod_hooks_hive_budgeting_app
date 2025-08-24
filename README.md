@@ -44,7 +44,7 @@ This project introduces a separation of concerns:
 
 * Together, they ensure state updates are both reactive (for UI rebuilds) and durable (saved locally).
 
-## 🧩 Architecture Overview
+<!-- ## 🧩 Architecture Overview
 ┌──────────────┐       ┌─────────────┐
 │  UI Layer    │◀────▶│ Riverpod     │
 │ (Widgets)    │       │ StateNotifier│
@@ -54,18 +54,31 @@ This project introduces a separation of concerns:
                        ┌────────────────┐
                        │ Hive Service   │
                        │ (UserData, etc)│
-                       └────────────────┘
+                       └────────────────┘ -->
+
+<pre> ```text 
+┌──────────────┐        ┌──────────────┐ 
+│ UI Layer     │◀────▶ │ Riverpod     │ 
+│ (Widgets)    │        │ StateNotifier│ 
+└──────────────┘        └───────▲──────┘ 
+                                │ 
+                                ▼ 
+                        ┌────────────────┐ 
+                        │ Hive Service   │ 
+                        │ (UserData,etc) │ └────────────────┘ 
+``` </pre>
 
 
-UI Layer: Uses HookConsumerWidget to watch providers and rebuild automatically when state changes.
+**UI Layer** : Uses HookConsumerWidget to watch providers and rebuild automatically when state changes.
 
-Provider (StateNotifier): Encapsulates domain logic (UserDataNotifier) and updates state immutably.
+**Provider** (StateNotifier): Encapsulates domain logic (UserDataNotifier) and updates state immutably.
 
-Service (Hive): Reads/writes data from a Hive box (userDataBox) to persist state.
+**Service (Hive)**: Reads/writes data from a Hive box (userDataBox) to persist state.
 
 ## 🧑‍💻 Example Domain: UserData
 
 ## Data Models
+```
 @HiveType(typeId: 0)
 class Transaction {
   @HiveField(0) String id;
@@ -81,8 +94,10 @@ class UserData {
   @HiveField(1) DateTime dateJoined;
   @HiveField(2) String username;
 }
+```
 
 ## Service Layer
+```
 class UserDataService {
   static const boxName = 'userDataBox';
 
@@ -96,8 +111,10 @@ class UserDataService {
     await box.put('userData', userData);
   }
 }
+```
 
 ## Provider Layer
+```
 final userDataProvider =
   StateNotifierProvider<UserDataNotifier, UserData>((ref) => UserDataNotifier());
 
@@ -125,6 +142,7 @@ class UserDataNotifier extends StateNotifier<UserData> {
   void addTransaction(Transaction tx) =>
       state = state.copyWith(transactions: [...state.transactions, tx]);
 }
+```
 
 ## 🎨 Extending to Themes
 
@@ -138,6 +156,7 @@ Supports toggling between light/dark/custom themes.
 
 Example ColorTheme model:
 
+```
 @HiveType(typeId: 2)
 class ColorTheme {
   @HiveField(0) int primaryColor;
@@ -153,11 +172,13 @@ class ColorTheme {
     scaffoldBackgroundColor: Color(backgroundColor),
   );
 }
+```
 
 ## 🛠️ Getting Started
 
 Add dependencies in pubspec.yaml:
 
+```
 dependencies:
   hooks_riverpod: ^2.5.1
   hive: ^2.2.3
@@ -165,15 +186,16 @@ dependencies:
 dev_dependencies:
   hive_generator: ^1.1.1
   build_runner: ^2.2.0
-
+```
 
 Run build runner to generate Hive adapters:
 
-flutter pub run build_runner build
+`flutter pub run build_runner build`
 
 
 Initialize Hive before runApp:
 
+```
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TransactionAdapter());
@@ -184,13 +206,14 @@ void main() async {
 
   runApp(ProviderScope(child: MyApp()));
 }
+```
 
 ## 🌟 Benefits of This Pattern
 
-Separation of concerns → Provider = state logic, Service = persistence.
+**Separation of concerns** → Provider = state logic, Service = persistence.
 
-Scalable → Add new domains (e.g., themes, settings) by repeating the pattern.
+**Scalable** → Add new domains (e.g., themes, settings) by repeating the pattern.
 
-Persistent & Reactive → App restarts keep the same state.
+**Persistent & Reactive** → App restarts keep the same state.
 
-Testable → Providers can be tested with mock services, Hive stays isolated.
+**Testable** → Providers can be tested with mock services, Hive stays isolated.
